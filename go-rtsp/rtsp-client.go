@@ -414,9 +414,7 @@ func (client *RtspClient) handleDescribe(res *RtspResponse) (err error) {
 		baseUrl = res.Fileds[ContentLocation]
 	}
 
-	if strings.HasSuffix(baseUrl, "/") {
-		baseUrl = baseUrl[:len(baseUrl)-1]
-	}
+	baseUrl = strings.TrimSuffix(baseUrl, "/")
 
 	getControlUrl := func(url string) string {
 		if url == "*" {
@@ -442,11 +440,12 @@ func (client *RtspClient) handleDescribe(res *RtspResponse) (err error) {
 			fmtpHandle.Load(media.Attrs["fmtp"])
 		}
 		var track *RtspTrack = nil
-		if media.MediaType == "audio" {
+		switch media.MediaType {
+		case "audio":
 			track = NewAudioTrack(NewAudioCodec(media.EncodeName, uint8(media.PayloadType), uint32(media.ClockRate), media.ChannelCount), WithCodecParamHandler(fmtpHandle))
-		} else if media.MediaType == "video" {
+		case "video":
 			track = NewVideoTrack(NewVideoCodec(media.EncodeName, uint8(media.PayloadType), uint32(media.ClockRate)), WithCodecParamHandler(fmtpHandle))
-		} else {
+		default:
 			track = NewMetaTrack(NewApplicatioCodec(media.EncodeName, uint8(media.PayloadType)))
 		}
 		if track == nil {
@@ -612,20 +611,6 @@ func (client *RtspClient) handlePlay(res *RtspResponse) (err error) {
 
 	if client.handle != nil {
 		return client.handle.HandlePlay(client, *res, tr, info)
-	}
-	return nil
-}
-
-func (client *RtspClient) handleTeardown(res *RtspResponse) error {
-	if client.handle != nil {
-		return client.handle.HandleTeardown(client, *res)
-	}
-	return nil
-}
-
-func (client *RtspClient) handlePause(res *RtspResponse) error {
-	if client.handle != nil {
-		return client.handle.HandlePause(client, *res)
 	}
 	return nil
 }

@@ -267,11 +267,12 @@ func (server *RtspServer) handleRequest(req []byte) (ret int, err error) {
 				fmtpHandle.Load(media.Attrs["fmtp"])
 			}
 			var track *RtspTrack = nil
-			if media.MediaType == "audio" {
+			switch media.MediaType {
+			case "audio":
 				track = NewAudioTrack(NewAudioCodec(media.EncodeName, uint8(media.PayloadType), uint32(media.ClockRate), media.ChannelCount), WithCodecParamHandler(fmtpHandle))
-			} else if media.MediaType == "video" {
+			case "video":
 				track = NewVideoTrack(NewVideoCodec(media.EncodeName, uint8(media.PayloadType), uint32(media.ClockRate)), WithCodecParamHandler(fmtpHandle))
-			} else {
+			default:
 				track = NewMetaTrack(NewApplicatioCodec(media.EncodeName, uint8(media.PayloadType)))
 			}
 			track.uri = media.ControlUrl
@@ -288,6 +289,7 @@ func (server *RtspServer) handleRequest(req []byte) (ret int, err error) {
 			i := &RtpInfo{}
 			i.Url = t.uri
 			i.Seq = t.initSequence
+			info = append(info, i)
 		}
 		server.handle.HandlePlay(server, request, &res, tr, info)
 		if res.StatusCode == 200 {
@@ -295,12 +297,12 @@ func (server *RtspServer) handleRequest(req []byte) (ret int, err error) {
 				res.Fileds[Range] = tr.EncodeString()
 			}
 			if len(info) > 0 {
-				infostr := ""
+				var infostr strings.Builder
 				for _, i := range info {
-					infostr += i.EncodeString()
-					infostr += ","
+					infostr.WriteString(i.EncodeString())
+					infostr.WriteString(",")
 				}
-				res.Fileds[RTPInfo] = infostr[:len(infostr)-1]
+				res.Fileds[RTPInfo] = infostr.String()[:len(infostr.String())-1]
 			}
 		}
 	case RECORD:
@@ -313,6 +315,7 @@ func (server *RtspServer) handleRequest(req []byte) (ret int, err error) {
 			i := &RtpInfo{}
 			i.Url = t.uri
 			i.Seq = t.initSequence
+			info = append(info, i)
 		}
 		server.handle.HandleRecord(server, request, &res, tr, info)
 		if res.StatusCode == 200 {
@@ -320,12 +323,12 @@ func (server *RtspServer) handleRequest(req []byte) (ret int, err error) {
 				res.Fileds[Range] = tr.EncodeString()
 			}
 			if len(info) > 0 {
-				infostr := ""
+				var infostr strings.Builder
 				for _, i := range info {
-					infostr += i.EncodeString()
-					infostr += ","
+					infostr.WriteString(i.EncodeString())
+					infostr.WriteString(",")
 				}
-				res.Fileds[RTPInfo] = infostr[:len(infostr)-1]
+				res.Fileds[RTPInfo] = infostr.String()[:len(infostr.String())-1]
 			}
 		}
 	case TEARDOWN:

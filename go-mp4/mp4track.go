@@ -437,7 +437,7 @@ func (track *mp4track) writeAAC(aacframes []byte, pts, dts uint64) (err error) {
 	if !ok {
 		return errors.New("must init aacExtraData first")
 	}
-	if aacextra.asc == nil || len(aacextra.asc) <= 0 {
+	if len(aacextra.asc) <= 0 {
 		asc, err := codec.ConvertADTSToASC(aacframes)
 		if err != nil {
 			return err
