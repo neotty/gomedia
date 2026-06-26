@@ -51,7 +51,7 @@ func CreateMp4Muxer(w io.WriteSeeker, options ...MuxerOption) (*Movmuxer, error)
 	muxer := &Movmuxer{
 		writer:         w,
 		nextTrackId:    1,
-		nextFragmentId: 1,
+		nextFragmentId: 0,
 		tracks:         make(map[uint32]*mp4track),
 		movFlag:        MP4_FLAG_KEYFRAME,
 	}
@@ -346,7 +346,7 @@ func (muxer *Movmuxer) FlushFragment() (err error) {
 func (muxer *Movmuxer) flushFragment() (err error) {
 
 	if muxer.movFlag.isFragment() {
-		if muxer.nextFragmentId == 1 { //first fragment ,write moov
+		if muxer.nextFragmentId == 0 { //first fragment ,write moov
 			ftypBox := makeFtypBox(mov_tag(iso5), 0x200, []uint32{mov_tag(iso5), mov_tag(iso6), mov_tag(mp41)})
 			_, err := muxer.writer.Write(ftypBox)
 			if err != nil {

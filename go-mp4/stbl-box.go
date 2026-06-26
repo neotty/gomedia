@@ -25,7 +25,7 @@ func makeStblBox(track *mp4track) []byte {
 		if track.stbltable.stco != nil {
 			stcobox = makeStco(track.stbltable.stco)
 		}
-		if track.cid == MP4_CODEC_H264 || track.cid == MP4_CODEC_H265 {
+		if (track.cid == MP4_CODEC_H264 || track.cid == MP4_CODEC_H265) && track.stbltable.stts != nil && track.stbltable.stts.entryCount > 0 {
 			stssbox = makeStss(track)
 		}
 	}
