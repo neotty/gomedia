@@ -14,7 +14,7 @@ const (
 	HTTPOK = 200
 )
 
-//.example_http_flv_client -i url -o out.flv
+// .example_http_flv_client -i url -o out.flv
 func main() {
 	flvurl, flvfilename := parseFlag()
 	flvfile, err := os.Create(flvfilename)

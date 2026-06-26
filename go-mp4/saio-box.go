@@ -15,7 +15,7 @@ type SaioBox struct {
 }
 
 func (s *SaioBox) Decode(r io.Reader, size uint32) error {
- 	if _, err := s.Box.Decode(r); err != nil {
+	if _, err := s.Box.Decode(r); err != nil {
 		return err
 	}
 	buf := make([]byte, size-12)
@@ -25,7 +25,7 @@ func (s *SaioBox) Decode(r io.Reader, size uint32) error {
 	var n int
 	flags := uint32(s.Box.Flags[0])<<16 | uint32(s.Box.Flags[1])<<8 | uint32(s.Box.Flags[2])
 	if flags&0x01 != 0 {
-		s.AuxInfoType = string(buf[n:n+4])
+		s.AuxInfoType = string(buf[n : n+4])
 		n += 4
 		s.AuxInfoTypeParameter = binary.BigEndian.Uint32(buf[n:])
 		n += 4
@@ -92,5 +92,5 @@ func decodeSaioBox(demuxer *MovDemuxer, size uint32) error {
 		}
 		demuxer.reader.Seek(currentOffset, io.SeekStart)
 	}
- 	return nil
+	return nil
 }

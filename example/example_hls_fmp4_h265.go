@@ -156,7 +156,7 @@ func onH265HLSVod(w http.ResponseWriter, r *http.Request) {
 	w.Write(buf.Bytes())
 }
 
-//http://127.0.0.1:19999/vod/test.m3u8
+// http://127.0.0.1:19999/vod/test.m3u8
 func main() {
 	generateH265M3U8(os.Args[1])
 	mux := http.NewServeMux()
